@@ -4,6 +4,9 @@
         <a class="btn btn-success pull-right">Add Document</a>
     </div>
     <div class="panel-body">
-        <cms-document-item></cms-document-item>
+        <cms-document-item
+            *ngFor="let documentEl of documents"
+            [document]="documentEl"
+            (click)="documentSelected(documentEl)"></cms-document-item>
     </div>
 </div>

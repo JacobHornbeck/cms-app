@@ -1,1 +1,16 @@
-<p>document-detail works!</p>
+<div class="panel panel-default" xmlns="http://www.w3.org/1999/html" *ngIf="document">
+    <div class="panel-heading">
+        <h4 class="documentTitle">{{ document.name }}</h4>
+        <div class="documentButtons">
+            <a class="btn btn-primary">View</a>
+            <a class="btn btn-info">Edit</a>
+            <a class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+    <div class="panel-body">
+        <label>Description:</label>
+        <p class="label-value">{{ document.description }}</p>
+        <label>URL:</label>
+        <p class="label-value">{{ document.url }}</p>
+    </div>
+</div>
