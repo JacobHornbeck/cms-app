@@ -11,4 +11,7 @@ export class DropdownDirective {
     @HostListener('click') toggle() {
         this.isOpen = !this.isOpen;
     }
+    @HostListener('focusout') toggle2() {
+        this.isOpen = false;
+    }
 }
