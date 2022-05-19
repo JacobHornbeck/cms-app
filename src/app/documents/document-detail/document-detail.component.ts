@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Document } from '../documents.model';
+import { Document } from '../document.model';
+import { DocumentService } from '../document.service';
 
 @Component({
     selector: 'cms-document-detail',
@@ -7,8 +8,12 @@ import { Document } from '../documents.model';
     styleUrls: ['./document-detail.component.css']
 })
 export class DocumentDetailComponent implements OnInit {
-    @Input() document: Document;
+    document: Document;
 
-    constructor() { }
-    ngOnInit(): void { }
+    constructor(private documentService: DocumentService) { }
+    ngOnInit(): void {
+        this.documentService.documentChanged.subscribe(document => {
+            this.document = document;
+        })
+    }
 }
