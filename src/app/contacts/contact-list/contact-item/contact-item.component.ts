@@ -9,6 +9,7 @@ import { ContactService } from '../../contact.service';
 })
 export class ContactItemComponent implements OnInit {
     @Input() contact: Contact;
+    @Input() id: string;
 
     constructor(private contactService: ContactService) { }
     ngOnInit(): void { }

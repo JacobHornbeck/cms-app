@@ -7,6 +7,7 @@ import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 })
 export class DocumentService {
     documentChanged = new EventEmitter<Document>();
+    documentsChangedEvent = new EventEmitter<Document[]>();
     private selectedDocument: Document;
     private documents: Document[];
 
@@ -16,7 +17,14 @@ export class DocumentService {
 
     /* addDocument(document: Document) {
         this.documents.push(document);
+        this.documentsChangedEvent.emit(this.documents);
     } */
+    deleteDocument(id: string) {
+        this.documents = this.documents.filter((document: Document) => {
+            return document.id !== id;
+        })
+        this.documentsChangedEvent.emit(this.documents);
+    }
     selectDocument(document: Document) {
         this.selectedDocument = document;
         this.documentChanged.emit(this.selectedDocument);

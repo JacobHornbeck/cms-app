@@ -13,5 +13,8 @@ export class ContactListComponent implements OnInit {
     constructor(private contactService: ContactService) {}
     ngOnInit(): void {
         this.contacts = this.contactService.getContacts();
+        this.contactService.contactsChangedEvent.subscribe((updatedContacts: Contact[]) => {
+            this.contacts = updatedContacts;
+        })
     }
 }

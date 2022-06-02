@@ -1,8 +1,12 @@
-<a class="list-group-item clearfix" (click)="onSelected()" style="cursor: pointer;">
+<a class="list-group-item clearfix" [routerLink]="id" routerLinkActive="active">
     <div class="pull-left">
         <h4>{{ contact.name }}</h4>
     </div>
     <span class="pull-right">
-        <img *ngIf="contact.imageUrl" [src]="contact.imageUrl" [alt]="contact.name" class="pull-right" style="width: 50px; height: 50px; object-fit: cover; object-position: top;">
+        <img *ngIf="contact.imageUrl"
+             [src]="contact.imageUrl"
+             [alt]="contact.name"
+             class="pull-right"
+             style="width: 50px; height: 50px; object-fit: cover; object-position: top;">
     </span>
 </a>
