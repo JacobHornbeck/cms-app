@@ -10,15 +10,36 @@ export class ContactService {
     contactsChangedEvent = new EventEmitter<Contact[]>();
     selectedContact: Contact;
     private contacts: Contact[] = [];
+    private maxContactId: number;
+    private getMaxId(): number {
+        return this.contacts.reduce((prev: number, contact: Contact) => {
+            return +contact.id > prev ? +contact.id : prev
+        }, 0);
+    }
 
     constructor() {
         this.contacts = MOCKCONTACTS;
+        this.maxContactId = this.getMaxId();
     }
 
-    /* addContact(contact: Contact) {
+    addContact(contact: Contact) {
+        if (!contact) return;
+
+        this.maxContactId++;
+        contact.id = this.maxContactId.toString();
         this.contacts.push(contact);
-        this.contactsChangedEvent.emit(this.contacts);
-    } */
+        this.contactsChangedEvent.next(this.contacts.slice());
+    }
+    updateContact(originalContact: Contact, newContact: Contact) {
+        if (!originalContact || !newContact) return;
+
+        let i = this.contacts.indexOf(originalContact);
+        if (i < 0) return;
+
+        newContact.id = originalContact.id;
+        this.contacts[i] = newContact;
+        this.contactsChangedEvent.next(this.contacts.slice());
+    }
     deleteContact(id: string) {
         this.contacts = this.contacts.filter((contact: Contact) => {
             return contact.id !== id;

@@ -1,4 +1,5 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 
@@ -6,28 +7,50 @@ import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
     providedIn: 'root'
 })
 export class DocumentService {
-    documentChanged = new EventEmitter<Document>();
-    documentsChangedEvent = new EventEmitter<Document[]>();
+    documentChanged = new Subject<Document>();
+    documentsChangedEvent = new Subject<Document[]>();
     private selectedDocument: Document;
     private documents: Document[];
+    private maxDocumentId: number;
+    private getMaxId(): number {
+        return this.documents.reduce((prev: number, document: Document) => {
+            return +document.id > prev ? +document.id : prev
+        }, 0);
+    }
 
     constructor() {
         this.documents = MOCKDOCUMENTS;
+        this.maxDocumentId = this.getMaxId();
     }
 
-    /* addDocument(document: Document) {
+
+    addDocument(document: Document) {
+        if (!document) return;
+
+        this.maxDocumentId++;
+        document.id = this.maxDocumentId.toString();
         this.documents.push(document);
-        this.documentsChangedEvent.emit(this.documents);
-    } */
+        this.documentsChangedEvent.next(this.documents.slice());
+    }
+    updateDocument(originalDocument: Document, newDocument: Document) {
+        if (!originalDocument || !newDocument) return;
+
+        let i = this.documents.indexOf(originalDocument);
+        if (i < 0) return;
+
+        newDocument.id = originalDocument.id;
+        this.documents[i] = newDocument;
+        this.documentsChangedEvent.next(this.documents.slice());
+    }
     deleteDocument(id: string) {
         this.documents = this.documents.filter((document: Document) => {
             return document.id !== id;
         })
-        this.documentsChangedEvent.emit(this.documents);
+        this.documentsChangedEvent.next(this.documents);
     }
     selectDocument(document: Document) {
         this.selectedDocument = document;
-        this.documentChanged.emit(this.selectedDocument);
+        this.documentChanged.next(this.selectedDocument);
     }
     getDocument(id: string) {
         return this.documents.find(document => document.id === id);
