@@ -1,0 +1,19 @@
+.contactName {
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    margin: 0;
+}
+
+.panel-heading {
+    display: grid;
+    grid-template-columns: auto 130px;
+    align-items: center;
+    padding: 1.5rem;
+}
+
+.contactButtons {
+    justify-self: end;
+}

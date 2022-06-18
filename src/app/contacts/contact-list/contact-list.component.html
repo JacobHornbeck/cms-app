@@ -7,6 +7,8 @@
         <cms-contact-item
             *ngFor="let contactEl of contacts"
             [contact]="contactEl"
-            [id]="contactEl.id"></cms-contact-item>
+            [id]="contactEl.id"
+            dnd-draggable
+            [dragEnabled]="true" [dragData]="contactEl" [dropZones]="['contactGroup']"></cms-contact-item>
     </div>
 </div>

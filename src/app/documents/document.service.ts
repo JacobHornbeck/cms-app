@@ -9,6 +9,7 @@ import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 export class DocumentService {
     documentChanged = new Subject<Document>();
     documentsChangedEvent = new Subject<Document[]>();
+    startEditing = new Subject<string>();
     private selectedDocument: Document;
     private documents: Document[];
     private maxDocumentId: number;

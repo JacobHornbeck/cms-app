@@ -1,16 +1,22 @@
 <div class="panel panel-default">
-    <div class="panel-heading clearfix">
-        <h2>{{ contact.name }}</h2>
-        <span class="pull-left">
-            <img [src]="contact.imageUrl" [alt]="contact.name" style="max-height: 100px;">
-        </span>
-        <div class="pull-right">
+    <div class="panel-heading">
+        <h3 class="contactName">{{ contact.name }}</h3>
+        <div class="contactButtons">
             <a routerLink="edit" class="btn btn-primary">Edit</a>
             <a class="btn btn-danger" (click)="onDelete()">Delete</a>
         </div>
+        <span *ngIf="contact.imageUrl">
+            <img [src]="contact.imageUrl" [alt]="contact.name" style="max-height: 100px;">
+        </span>
     </div>
     <div class="panel-body">
-        <div><b>Email:</b> {{ contact.email }}</div>
-        <div><b>Phone:</b> {{ contact.phone }}</div>
+        <div *ngIf="contact.email"><b>Email:</b> {{ contact.email }}</div>
+        <div *ngIf="contact.phone"><b>Phone:</b> {{ contact.phone }}</div>
+        <h5 *ngIf="contact.group.length > 0" style="font-weight: bold;">Contacts In Team:</h5>
+        <div *ngFor="let contact of contact.group; let i = index">
+            <div>
+                <cms-contact-item [contact]="contact"></cms-contact-item>
+            </div>
+        </div>
     </div>
 </div>
