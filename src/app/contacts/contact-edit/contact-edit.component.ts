@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -11,7 +11,7 @@ import { Contact } from '../contact.model';
     templateUrl: './contact-edit.component.html',
     styleUrls: ['./contact-edit.component.css']
 })
-export class ContactEditComponent implements OnInit {
+export class ContactEditComponent implements OnInit, OnDestroy {
     id: string;
     contact: Contact;
     editMode = false;
@@ -73,5 +73,9 @@ export class ContactEditComponent implements OnInit {
     onRemoveItem(index: number) {
         this.groupContacts = this.groupContacts.filter((el: any, i: number) => i !== index);
         this.isError = false;
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 }

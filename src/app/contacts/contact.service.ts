@@ -9,7 +9,6 @@ import { MOCKCONTACTS } from "./MOCKCONTACTS";
 export class ContactService {
     contactsChangedEvent = new Subject<Contact[]>();
     contactGroupError = new Subject<string>();
-    selectedContact: Contact;
     private contacts: Contact[] = [];
     private maxContactId: number;
     private getMaxId(): number {
