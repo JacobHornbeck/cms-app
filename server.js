@@ -1,30 +1,26 @@
 // Get dependencies
-var express = require('express');
-var path = require('path');
-var http = require('http');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const http = require('http');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
 const port = process.env.PORT || '3000';
 
 // import the routing file to handle the default (index) route
-var index = require('./server/routes/app');
+const index = require('./server/routes/app');
 const messageRoutes = require('./server/routes/messages')
 const contactRoutes = require('./server/routes/contacts')
 const documentRoutes = require('./server/routes/documents')
 
-
-var expressApp = express(); // create an instance of express
+const expressApp = express(); // create an instance of express
 
 // Tell express to use the following parsers for POST data
 expressApp
     .use(express.json())
-    .use(express.urlencoded({
-        extended: false
-    }))
+    .use(express.urlencoded({ extended: false }))
     .use(cookieParser())
-    .use(logger('dev')) // Tell express to use the Morgan logger
-    // Add support for CORS
+    .use(logger('dev'))
     .use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader(
@@ -42,9 +38,6 @@ expressApp
     .use('/messages', messageRoutes)
     .use('/contacts', contactRoutes)
     .use('/documents', documentRoutes)
-
-
-    // Tell express to map all other non-defined routes back to the index page
     .get('*', (req, res) => {
         res.sendFile(path.join(__dirname, 'dist/cms/index.html'));
     })
