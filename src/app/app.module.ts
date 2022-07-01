@@ -1,7 +1,8 @@
-import { NgModule      } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule   } from '@angular/forms';
-import { DndModule     } from 'ng2-dnd';
+import { NgModule         } from '@angular/core';
+import { BrowserModule    } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http'
+import { FormsModule      } from '@angular/forms';
+import { DndModule        } from 'ng2-dnd';
 
 import { AppComponent     } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,6 +29,7 @@ import { MessageItemComponent } from './messages/message-list/message-item/messa
 import { MessageEditComponent } from './messages/message-edit/message-edit.component';
 
 import { DropdownDirective } from './dropdown.directive';
+import { ContactsFilterPipe } from './contacts-filter.pipe';
 
 @NgModule({
     declarations: [
@@ -50,11 +52,13 @@ import { DropdownDirective } from './dropdown.directive';
         MessageItemComponent,
         MessageEditComponent,
         DropdownDirective,
+        ContactsFilterPipe,
     ],
     imports: [
-        AppRoutingModule,
         BrowserModule,
         FormsModule,
+        HttpClientModule,
+        AppRoutingModule,
         DndModule.forRoot(),
     ],
     providers: [],

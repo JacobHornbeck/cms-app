@@ -1,0 +1,19 @@
+.input-group {
+    display: grid;
+    grid-template-columns: auto 50px;
+    align-items: center;
+    max-width: 250px;
+    clear: left;
+}
+
+.input-group .glyphicon {
+    box-sizing: border-box;
+    padding: 8px 12px;
+    height: 100%;
+    width: 100%;
+    top: 0;
+}
+
+h4 + button {
+    clear: both;
+}

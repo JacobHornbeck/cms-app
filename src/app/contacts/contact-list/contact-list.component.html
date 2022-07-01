@@ -2,13 +2,18 @@
     <div class="panel-heading clearfix">
         <h4 class="pull-left">Contacts</h4>
         <button class="btn btn-success pull-right" routerLink="new">New Contact</button>
+        <div class="input-group pull-left">
+            <input type="text" class="form-control" (keyup)="search(searchBox.value)" #searchBox>
+            <div class="glyphicon glyphicon-search input-group-addon" (click)="search(searchBox.value)"></div>
+        </div>
     </div>
     <div class="panel-body">
         <cms-contact-item
-            *ngFor="let contactEl of contacts"
+            *ngFor="let contactEl of contacts | contactsFilter:term"
             [contact]="contactEl"
             [id]="contactEl.id"
             dnd-draggable
             [dragEnabled]="true" [dragData]="contactEl" [dropZones]="['contactGroup']"></cms-contact-item>
+        <h4 *ngIf="(contacts | contactsFilter:term).length < 1">No contacts found</h4>
     </div>
 </div>
