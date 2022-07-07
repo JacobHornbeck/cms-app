@@ -37,8 +37,11 @@ export class ContactEditComponent implements OnInit, OnDestroy {
             this.id = params['id']
             this.editMode = params['id'] != null;
             if (this.id) {
-                this.contact = this.contactService.getContact(this.id);
-                this.groupContacts = Array.from(this.contact.group);
+                this.contactService.getContact(this.id)
+                    .subscribe((result: { message: String, contact: Contact }) => {
+                        this.contact = result.contact
+                    })
+                this.groupContacts = this.contact.group ? Array.from(this.contact.group) : [];
             }
         })
         this.subscription = this.contactService.contactGroupError.subscribe((message: String) => {

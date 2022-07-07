@@ -2,8 +2,8 @@
     display: grid;
     grid-template-columns: auto 50px;
     align-items: center;
-    max-width: 250px;
     clear: left;
+    width: 60%;
 }
 
 .input-group .glyphicon {

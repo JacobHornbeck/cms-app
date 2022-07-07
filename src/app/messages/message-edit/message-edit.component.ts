@@ -1,4 +1,8 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { ContactService } from 'src/app/contacts/contact.service';
+
+import { Contact } from "../../contacts/contact.model";
 import { Message } from '../message.model';
 import { MessageService } from '../message.service';
 
@@ -10,16 +14,28 @@ import { MessageService } from '../message.service';
 export class MessageEditComponent implements OnInit {
     @ViewChild('msgSubject') subjectRef: ElementRef;
     @ViewChild('msgText') textRef: ElementRef;
+    currentSender: Contact;
 
-    constructor(private messageService: MessageService) { }
-    ngOnInit(): void { }
+    constructor(private messageService: MessageService,
+                private contactService: ContactService) { }
+    ngOnInit(): void {
+        this.contactService.getContact('101')
+            .subscribe((result: { message: string, contact: Contact }) => {
+                this.currentSender = result.contact
+            })
+    }
 
-    onAddMessage() {
+    onAddMessage(f: NgForm) {
         const message = {
-            subject: this.subjectRef.nativeElement.value,
-            msgText: this.textRef.nativeElement.value
+            subject: f.value.subject,
+            msgText: f.value.message
         };
-        const newMessage = new Message('1', message.subject, message.msgText, '2');
+        const newMessage = new Message(
+            '',
+            message.subject,
+            message.msgText,
+            this.currentSender
+        );
         this.subjectRef.nativeElement.value = "";
         this.textRef.nativeElement.value = "";
         this.messageService.addMessage(newMessage);

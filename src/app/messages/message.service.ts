@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 import { Message } from './message.model';
-import { MOCKMESSAGES } from './MOCKMESSAGES';
 
 @Injectable({
     providedIn: 'root'
@@ -11,50 +10,40 @@ import { MOCKMESSAGES } from './MOCKMESSAGES';
 export class MessageService {
     messagesChanged = new Subject<Message[]>();
     private messages: Message[] = [];
-    private maxMessageId: number;
-    private getMaxId(): number {
-        return this.messages.reduce((prev: number, message: Message) => {
-            return +message.id > prev ? +message.id : prev;
-        }, 0);
-    }
-    private messagesHaveChanged(newMessages: Message[]) {
-        this.messages = newMessages;
-        this.maxMessageId = this.getMaxId();
+    private messagesHaveChanged(newMessages: Message[] = null) {
+        if (newMessages != null)
+            this.messages = newMessages;
         this.messagesChanged.next(this.messages.slice());
     }
 
     constructor(private http: HttpClient) {
-        http.get<Message[]>('https://wdd430-project-default-rtdb.firebaseio.com/messages.json')
+        http.get('http://localhost:3000/messages')
             .subscribe(
-                (messages: Message[]) => { this.messagesHaveChanged(messages); },
-                (error: any) => { console.log(error); }
-            );
-    }
-
-    storeMessages(messages: Message[]) {
-        const httpHeaders = new HttpHeaders({ 'content-type': 'application/json' });
-        this.http
-            .put(
-                'https://wdd430-project-default-rtdb.firebaseio.com/messages.json',
-                messages,
-                { headers: httpHeaders }
-            )
-            .subscribe(
-                (messages: Message[]) => { this.messagesHaveChanged(messages); },
+                (result: any) => { this.messagesHaveChanged(result.messages); },
                 (error: any) => { console.log(error); }
             );
     }
 
     addMessage(message: Message) {
-        this.maxMessageId++;
-        message.id = this.maxMessageId.toString();
-        this.messages.push(message);
-        this.storeMessages(this.messages);
+        if (!message) return
+        message.id = '';
+    
+        const headers = new HttpHeaders({'Content-Type': 'application/json'});
+        this.http
+            .post<{ message: string; createdMessage: Message }>('http://localhost:3000/messages', message, { headers: headers })
+            .subscribe((responseData) => {
+                let subscription: Subscription
+                this.messages.push(responseData.createdMessage);
+                subscription = this.getMessages().subscribe((result: { message: string, messages: Message[] }) => {
+                    this.messagesHaveChanged(result.messages)
+                    subscription.unsubscribe();
+                })
+            });
     }
     getMessage(id: string) {
-        return this.messages.find(message => message.id === id);
+        return this.http.get(`http://localhost:3000/messages/${id}`)
     }
     getMessages() {
-        return this.messages.slice();
+        return this.http.get('http://localhost:3000/messages')
     }
 }

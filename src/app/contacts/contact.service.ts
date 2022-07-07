@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Contact } from './contact.model';
-import { MOCKCONTACTS } from "./MOCKCONTACTS";
 
 @Injectable({
     providedIn: 'root',
@@ -11,16 +10,12 @@ import { MOCKCONTACTS } from "./MOCKCONTACTS";
 export class ContactService {
     contactsChangedEvent = new Subject<Contact[]>();
     contactGroupError = new Subject<string>();
+    contactUpdated = new Subject<Contact>();
     private contacts: Contact[] = [];
-    private maxContactId: number;
-    private getMaxId(): number {
-        return this.contacts.reduce((prev: number, contact: Contact) => {
-            return +contact.id > prev ? +contact.id : prev;
-        }, 0);
-    }
-    private contactsHaveChanged(newContacts: Contact[]) {
-        this.contacts = newContacts;
-        this.maxContactId = this.getMaxId();
+    
+    private contactsHaveChanged(newContacts: Contact[] = null) {
+        if (newContacts != null)
+            this.contacts = newContacts;
         this.contacts = this.contacts
             .filter(contact => {
                 return !contact.name.toLowerCase().includes("team")
@@ -39,63 +34,83 @@ export class ContactService {
             );
         this.contactsChangedEvent.next(this.contacts.slice());
     }
-
-    constructor(private http: HttpClient) {
-        http.get<Contact[]>('https://wdd430-project-default-rtdb.firebaseio.com/contacts.json')
-            .subscribe(
-                (contacts: Contact[]) => { this.contactsHaveChanged(contacts); },
-                (error: any) => { console.log(error); }
+    sortedContacts(contacts: Contact[]) {
+        if (!contacts) return
+        return this.contacts
+            .filter(contact => {
+                return !contact.name.toLowerCase().includes("team")
+            })
+            .sort((contact1: Contact, contact2: Contact) => {
+                return contact1.name > contact2.name ? 1 : -1;
+            })
+            .concat(
+                this.contacts
+                    .filter(contact => {
+                        return contact.name.toLowerCase().includes("team")
+                    })
+                    .sort((contact1: Contact, contact2: Contact) => {
+                        return contact1.name > contact2.name ? 1 : -1;
+                    })
             );
     }
 
-    storeContacts(contacts: Contact[]) {
-        const httpHeaders = new HttpHeaders({
-            'content-type': 'application/json',
-        });
-        this.http
-            .put(
-                'https://wdd430-project-default-rtdb.firebaseio.com/contacts.json',
-                contacts,
-                { headers: httpHeaders }
-            )
+    constructor(private http: HttpClient) {
+        http.get('http://localhost:3000/contacts')
             .subscribe(
-                (contacts: Contact[]) => { this.contactsHaveChanged(contacts); },
+                (result: any) => { this.contactsHaveChanged(result.contacts); },
                 (error: any) => { console.log(error); }
             );
     }
 
     addContact(contact: Contact) {
-        if (!contact) return;
-
-        this.maxContactId++;
-        contact.id = this.maxContactId.toString();
-        this.contacts.push(contact);
-        this.storeContacts(this.contacts);
+        if (!contact) return
+        contact.id = '';
+    
+        const headers = new HttpHeaders({'Content-Type': 'application/json'});
+        this.http
+            .post<{ message: string, contact: Contact }>('http://localhost:3000/contacts', contact, { headers: headers })
+            .subscribe((responseData) => {
+                this.contacts.push(responseData.contact);
+                this.contactsHaveChanged()
+            });
     }
-
     updateContact(originalContact: Contact, newContact: Contact) {
-        if (!originalContact || !newContact) return;
+        if (!originalContact || !newContact) return
 
-        let i = this.contacts.indexOf(originalContact);
-        if (i < 0) return;
+        const pos = this.contacts.findIndex(c => c.id === originalContact.id);
+        if (pos < 0) return
 
         newContact.id = originalContact.id;
-        this.contacts[i] = newContact;
-        this.storeContacts(this.contacts);
-    }
+        newContact._id = originalContact._id;
 
-    deleteContact(id: string) {
-        this.contacts = this.contacts.filter((contact: Contact) => {
-            return contact.id !== id;
-        });
-        this.storeContacts(this.contacts);
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        this.http
+            .put('http://localhost:3000/contacts/' + originalContact.id, newContact, { headers: headers })
+            .subscribe(() => {
+                this.contacts[pos] = newContact
+                this.contactsHaveChanged()
+                this.contactUpdated.next(newContact)
+            });
+    }
+    deleteContact(contact: Contact) {
+        if (!contact) return
+
+        const pos = this.contacts.findIndex(c => c.id === contact.id);
+        if (pos < 0) return
+
+        this.http
+            .delete('http://localhost:3000/contacts/' + contact.id)
+            .subscribe(() => {
+                this.contacts.splice(pos, 1);
+                this.contactsHaveChanged()
+            });
     }
 
     getContacts() {
-        return this.contacts.slice();
+        return this.http.get('http://localhost:3000/contacts')
     }
 
     getContact(id: string) {
-        return this.contacts.find((contact) => contact.id === id);
+        return this.http.get(`http://localhost:3000/contacts/${id}`)
     }
 }

@@ -1,5 +1,6 @@
 // Get dependencies
 const express = require('express');
+const mongoose = require('mongoose')
 const path = require('path');
 const http = require('http');
 const cookieParser = require('cookie-parser');
@@ -12,6 +13,11 @@ const index = require('./server/routes/app');
 const messageRoutes = require('./server/routes/messages')
 const contactRoutes = require('./server/routes/contacts')
 const documentRoutes = require('./server/routes/documents')
+
+mongoose.connect('mongodb://localhost:27017/cms', { useNewUrlParser: true }, (err, res) => {
+    if (err) console.log('Connection failed: ' + err)
+    else console.log('Connected to database!')
+})
 
 const expressApp = express(); // create an instance of express
 

@@ -9,13 +9,16 @@ import { ContactService } from '../contact.service';
     styleUrls: ['./contact-list.component.css'],
 })
 export class ContactListComponent implements OnInit, OnDestroy {
-    contacts: Contact[];
+    contacts: Contact[] = [];
     subscription: Subscription;
     term: string = '';
 
     constructor(private contactService: ContactService) {}
     ngOnInit(): void {
-        this.contacts = this.contactService.getContacts();
+        this.contactService.getContacts()
+            .subscribe((result: { message: String, contacts: Contact[] }) => {
+                this.contacts = this.contactService.sortedContacts(result.contacts)
+            })
         this.subscription = this.contactService.contactsChangedEvent.subscribe((updatedContacts: Contact[]) => {
             this.contacts = updatedContacts;
         })

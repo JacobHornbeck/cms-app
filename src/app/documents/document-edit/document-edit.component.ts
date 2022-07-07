@@ -1,6 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { FormControl, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { DocumentService } from '../document.service';
@@ -26,7 +26,12 @@ export class DocumentEditComponent implements OnInit {
         this.route.params.subscribe((params: Params) => {
             this.id = params['id']
             this.editMode = params['id'] != null;
-            if (this.id) this.document = this.documentService.getDocument(this.id);
+            if (this.id) {
+                this.documentService.getDocument(this.id)
+                    .subscribe((result: { message: string, document: Document }) => {
+                        this.document = result.document
+                    })
+            }
         })
     }
 

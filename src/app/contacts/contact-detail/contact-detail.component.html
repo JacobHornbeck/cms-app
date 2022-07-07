@@ -1,20 +1,20 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="contactName">{{ contact.name }}</h3>
+        <h3 class="contactName">{{ contact?.name }}</h3>
 
         <div class="contactButtons">
             <a routerLink="edit" class="btn btn-primary">Edit</a>
             <a class="btn btn-danger" (click)="onDelete()">Delete</a>
         </div>
-        <span *ngIf="contact.imageUrl" (mouseOver)="console.log(contact)">
-            <img [src]="contact.imageUrl" [alt]="contact.name" style="max-height: 100px;">
+        <span *ngIf="contact?.imageUrl">
+            <img [src]="contact?.imageUrl" [alt]="contact?.name" style="max-height: 100px;">
         </span>
     </div>
     <div class="panel-body">
-        <div *ngIf="contact.email"><b>Email:</b> {{ contact.email }}</div>
-        <div *ngIf="contact.phone"><b>Phone:</b> {{ contact.phone }}</div>
-        <h5 *ngIf="contact.group?.length > 0" style="font-weight: bold;">Contacts In Team:</h5>
-        <div *ngFor="let contact of contact.group; let i = index">
+        <div *ngIf="contact?.email"><b>Email:</b> {{ contact?.email }}</div>
+        <div *ngIf="contact?.phone"><b>Phone:</b> {{ contact?.phone }}</div>
+        <h5 *ngIf="contact?.group?.length > 0" style="font-weight: bold;">Contacts In Team:</h5>
+        <div *ngFor="let contact of contact?.group; let i = index">
             <div>
                 <cms-contact-item [contact]="contact"></cms-contact-item>
             </div>
